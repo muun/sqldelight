@@ -90,46 +90,43 @@ test {
   }
 }
 
-if (System.getenv("CI") == "true") {
-  apply plugin: 'com.github.johnrengelman.shadow'
+// Upstream only builds Fat Jar for CI but we need it since we are
+// using Jitpack for this (SqlDelight) Gradle Plugin
+apply plugin: 'com.github.johnrengelman.shadow'
 
-  configurations.compileOnly.extendsFrom(configurations.shade)
+configurations.compileOnly.extendsFrom(configurations.shade)
 
-  tasks.register("relocateShadowJar", ConfigureShadowRelocation.class) {
-    target = tasks.shadowJar
-    prefix = "sqldelight"
-  }
+tasks.register("relocateShadowJar", ConfigureShadowRelocation.class) {
+  target = tasks.shadowJar
+  prefix = "sqldelight"
+}
 
-  tasks.getByName("shadowJar").configure {
-    dependsOn("relocateShadowJar")
-    archiveClassifier.set("")
-    minimize()
-    configurations = [project.configurations.shade]
+tasks.getByName("shadowJar").configure {
+  dependsOn("relocateShadowJar")
+  archiveClassifier.set("")
+  minimize()
+  configurations = [project.configurations.shade]
 
     doFirst {
       relocators = relocators.grep {
         !it.getPattern().startsWith("com.squareup.sqldelight") &&
                 !it.getPattern().startsWith("groovy") &&
                 !it.getPattern().startsWith("kotlin")
-      }
     }
-
-    include '*.jar'
-    include '**/*.class'
-    include 'META-INF/gradle-plugins/*'
-    include 'messages/*.properties'
-
-    exclude '/groovy**'
-    exclude '/kotlin/**'
   }
 
-  artifacts {
-    runtimeOnly(shadowJar)
-    archives(shadowJar)
-  }
+  include '*.jar'
+  include '**/*.class'
+  include 'META-INF/gradle-plugins/*'
+  include 'messages/*.properties'
 
-} else {
-  configurations.implementation.extendsFrom(configurations.shade)
+  exclude '/groovy**'
+  exclude '/kotlin/**'
+}
+
+artifacts {
+  runtimeOnly(shadowJar)
+  archives(shadowJar)
 }
 
 apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
