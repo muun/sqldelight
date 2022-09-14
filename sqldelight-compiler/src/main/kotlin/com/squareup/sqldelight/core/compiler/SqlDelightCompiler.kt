@@ -80,6 +80,7 @@ object SqlDelightCompiler {
       .apply {
         fileIndex.sourceFolders(sourceFile, includeDependencies = true)
           .flatMap { it.findChildrenOfType<SqlDelightQueriesFile>() }
+          .sortedBy { it.name }
           .forEach { file ->
             val queriesGenerator = QueriesTypeGenerator(module, file)
             addType(queriesGenerator.generateType(packageName))
