@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'org.jetbrains.kotlin.jvm'
-apply plugin: "org.jetbrains.changelog"
 
 intellij {
   updateSinceUntilBuild = false
@@ -17,7 +16,6 @@ intellij {
   ]
   if (!project.version.endsWith("SNAPSHOT")) {
     patchPluginXml {
-      changeNotes = (provider { changelog.get(project.version).toHTML() })
     }
   } else {
     patchPluginXml {
@@ -52,10 +50,6 @@ runPluginVerifier {
   customFailureLevel.remove(FailureLevel.NOT_DYNAMIC)
 
   setFailureLevel(customFailureLevel)
-}
-
-changelog {
-  path = "$rootDir/CHANGELOG.md"
 }
 
 def isReleaseBuild() {
