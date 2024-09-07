@@ -1,2 +1,4 @@
 jdk:
   - openjdk11
+install:
+  - ./gradlew -Pgroup=com.github.muun -xtest -xlint clean sqldelight-gradle-plugin:publishToMavenLocal sqldelight-compiler:publishToMavenLocal
